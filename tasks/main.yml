@@ -1,2 +1,88 @@
 ---
-# tasks file for rixx.dehydrated
+- name: Ensure that the letsencrypt challenge directory exists
+  file:
+    path: "{{ dehydrated_well_known_path }}/.well-known/acme-challenge"
+    state: directory
+    mode: 0755
+    owner: root
+  tags:
+    - dehydrated
+
+- name: Ensure that the letsencrypt cert directory exists
+  file:
+    path: "{{ dehydrated_cert_path }}"
+    state: directory
+    mode: 0755
+    owner: root
+  tags:
+    - dehydrated
+
+- name: Ensure all dehydrated dependencies are installed
+  pacman:
+    pkg: "{{item}}"
+    state: present
+  with_items:
+    - openssl
+    - curl
+    - sed
+    - grep
+    - coreutils
+  tags:
+    - dehydrated
+
+- name: Ensure that the dehydrated configuration exists
+  template:
+    src: dehydrated.conf
+    dest: "{{ dehydrated_cert_path }}/dehydrated.conf"
+  tags:
+    - ssl
+
+- name: Ensure that the dehydrated hooks file exists
+  template:
+    src: hooks.sh
+    dest: "{{ dehydrated_cert_path }}/hooks.sh"
+    mode: 0750
+    owner: root
+  tags:
+    - dehydrated
+
+- name: Ensure that the letsencrypt domain list file exists
+  file:
+    path: "{{ dehydrated_cert_path }}/domains.txt"
+    state: touch
+  tags:
+    - dehydrated
+
+- name: Build the letsencrypt domain list
+  lineinfile:
+    dest: /etc/ssl/letsencrypt/domains.txt
+    line: "{{ item.domains | join(' ') }}"
+  with_items: "{{ dehydrated_domains }}"
+  tags:
+    - dehydrated
+
+- name: Download the dehydrated shell script
+  get_url:
+    url: https://raw.githubusercontent.com/lukas2511/dehydrated/v0.5.0/dehydrated
+    dest: /etc/ssl/letsencrypt/dehydrated
+    mode: 0700
+    sha256sum: 79713c15985089bcaaaed93dcda9dcec6ac0dd6aaae3d518256b6c15f1acc8f8
+  tags:
+    - dehydrated
+
+- name: Execute dehydrated shell script
+  command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
+  args:
+    chdir: "{{ dehydrated_cert_path }}"
+  tags:
+    - dehydrated
+
+- name: Add letsencrypt cronjob
+  cron:
+    name: letsencrypt
+    hour: 7
+    minute: 0
+    day: "*/3"
+    job: "{{ dehydrated_cert_path }}/dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf"
+  tags:
+    - dehydrated
