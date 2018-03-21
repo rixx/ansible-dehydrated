@@ -63,10 +63,10 @@
 
 - name: Download the dehydrated shell script
   get_url:
-    url: https://raw.githubusercontent.com/lukas2511/dehydrated/v0.5.0/dehydrated
+    url: https://raw.githubusercontent.com/lukas2511/dehydrated/v0.6.1/dehydrated
     dest: /etc/ssl/letsencrypt/dehydrated
     mode: 0700
-    sha256sum: 79713c15985089bcaaaed93dcda9dcec6ac0dd6aaae3d518256b6c15f1acc8f8
+    sha256sum: fa4a788e244b61a69f091a19430821a616de2fc1ab1be237aa15973848178fcf
   tags:
     - dehydrated
 
