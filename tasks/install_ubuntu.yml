@@ -1,0 +1,14 @@
+---
+- name: Ensure that nginx is installed
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - openssl
+    - curl
+    - sed
+    - grep
+    - coreutils
+  tags:
+    - apt
+    - dehydrated

@@ -17,16 +17,8 @@
   tags:
     - dehydrated
 
-- name: Ensure all dehydrated dependencies are installed
-  pacman:
-    pkg: "{{item}}"
-    state: present
-  with_items:
-    - openssl
-    - curl
-    - sed
-    - grep
-    - coreutils
+- name: include install tasks
+  include_tasks: install_{{ ansible_distribution|lower }}.yml
   tags:
     - dehydrated
 
