@@ -1,5 +1,5 @@
 ---
-- name: Ensure that nginx is installed
+- name: Ensure all dehydrated dependencies are installed
   apt:
     pkg: "{{ item }}"
     state: present
