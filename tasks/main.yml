@@ -59,6 +59,13 @@
     dest: /etc/ssl/letsencrypt/dehydrated
     mode: 0700
     sha256sum: fa4a788e244b61a69f091a19430821a616de2fc1ab1be237aa15973848178fcf
+  tags:
+    - dehydrated
+
+- name: Execute dehydrated shell script
+  command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
+  args:
+    chdir: "{{ dehydrated_cert_path }}"
   register: executed
   tags:
     - dehydrated
@@ -68,13 +75,6 @@
   args:
     chdir: "{{ dehydrated_cert_path }}"
   when: executed|failed
-  tags:
-    - dehydrated
-
-- name: Execute dehydrated shell script
-  command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
-  args:
-    chdir: "{{ dehydrated_cert_path }}"
   tags:
     - dehydrated
 
