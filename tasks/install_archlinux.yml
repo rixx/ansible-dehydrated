@@ -9,5 +9,14 @@
     - sed
     - grep
     - coreutils
+    - cronie
+  tags:
+    - dehydrated
+
+- name: Make sure cronie is running
+  service:
+    name: cronie
+    state: running
+    enabled: true
   tags:
     - dehydrated
