@@ -16,7 +16,7 @@
 - name: Make sure cronie is running
   service:
     name: cronie
-    state: running
+    state: started
     enabled: true
   tags:
     - dehydrated

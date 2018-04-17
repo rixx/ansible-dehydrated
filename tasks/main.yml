@@ -67,6 +67,14 @@
   args:
     chdir: "{{ dehydrated_cert_path }}"
   register: executed
+  ignore_errors: True
+  tags:
+    - dehydrated
+
+- name: Fail if execude failed not because of terms of service
+  fail:
+    msg: "Execute dehydrated failed!"
+  when: executed|failed and "agree to their terms of service" not in execude.stdout
   tags:
     - dehydrated
 
