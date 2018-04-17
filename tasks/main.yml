@@ -71,10 +71,10 @@
   tags:
     - dehydrated
 
-- name: Fail if execude failed not because of terms of service
+- name: Fail if execute failed not because of terms of service
   fail:
     msg: "Execute dehydrated failed!"
-  when: executed|failed and "agree to their terms of service" not in execude.stdout
+  when: executed|failed and "agree to their terms of service" not in executed.stdout
   tags:
     - dehydrated
 
