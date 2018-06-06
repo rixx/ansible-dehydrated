@@ -1,1 +1,3 @@
-{% for domains in dehydrated_domains %}{{ domains.domains | join(' ') }}{% endfor %}
+{% for domains in dehydrated_domains %}
+{{ domains.domains | join(' ') }}
+{% endfor %}
