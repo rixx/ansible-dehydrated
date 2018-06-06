@@ -62,27 +62,17 @@
   tags:
     - dehydrated
 
-- name: Execute dehydrated shell script
-  command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
-  args:
-    chdir: "{{ dehydrated_cert_path }}"
-  register: executed
-  ignore_errors: True
-  tags:
-    - dehydrated
-
-- name: Fail if execute failed not because of terms of service
-  fail:
-    msg: "Execute dehydrated failed!"
-  when: executed|failed and "agree to their terms of service" not in executed.stdout
-  tags:
-    - dehydrated
-
 - name: Accept the Terms of Service if nessesary
   command: ./dehydrated --register --accept-terms
   args:
     chdir: "{{ dehydrated_cert_path }}"
-  when: executed|failed
+  tags:
+    - dehydrated
+
+- name: Execute dehydrated shell script
+  command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
+  args:
+    chdir: "{{ dehydrated_cert_path }}"
   tags:
     - dehydrated
 
