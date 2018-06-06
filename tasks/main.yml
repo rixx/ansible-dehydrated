@@ -46,10 +46,9 @@
     - dehydrated
 
 - name: Build the letsencrypt domain list
-  lineinfile:
+  template:
+    src: domains.txt.j2
     dest: /etc/ssl/letsencrypt/domains.txt
-    line: "{{ item.domains | join(' ') }}"
-  with_items: "{{ dehydrated_domains }}"
   tags:
     - dehydrated
 
