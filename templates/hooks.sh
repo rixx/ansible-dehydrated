@@ -65,6 +65,7 @@ deploy_cert() {
 	{% for service in dehydrated_ssl_services %}
 	pidof systemd && systemctl reload {{ service }} || /usr/sbin/service {{ service }} reload
 	{% endfor %}
+	{{ dehydrated_deploy_cert_hook }}
 }
 
 unchanged_cert() {

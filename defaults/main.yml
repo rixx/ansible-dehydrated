@@ -3,3 +3,4 @@ dehydrated_well_known_path: /usr/share/nginx/letsencrypt
 dehydrated_ssl_services:
   - nginx
 dehydrated_cert_path: /etc/ssl/letsencrypt
+dehydrated_deploy_cert_hook: ""

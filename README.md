@@ -16,6 +16,7 @@ Role Variables
 - ``dehydrated_ssl_services: [- nginx]``: Services to be restarted on certificate updates.
 - ``dehydrated_cert_path: /etc/ssl/letsencrypt``: The path where dehydrated itself and all certificates fetched will be located.
 - ``dehydrated_domains``: A list of domain lists to be requested as certificates. The first domain in each list is the primary one that will also be in the certificate file name and path. Format:
+- ``dehydrated_deploy_cert_hook``: Custom hooks to be run when deploying the certificates.
 
 ```
 dehydrated_domains:
