@@ -1,85 +1,90 @@
 ---
 - name: Ensure that the letsencrypt challenge directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ dehydrated_well_known_path }}/.well-known/acme-challenge"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
   tags:
     - dehydrated
 
 - name: Ensure that the letsencrypt cert directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ dehydrated_cert_path }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
   tags:
     - dehydrated
 
-- name: include install tasks
-  include_tasks: install_{{ ansible_distribution|lower }}.yml
+- name: Include install tasks
+  ansible.builtin.include_tasks: install_{{ ansible_distribution | lower }}.yml
   tags:
     - dehydrated
 
 - name: Ensure that the dehydrated configuration exists
-  template:
+  ansible.builtin.template:
     src: dehydrated.conf
     dest: "{{ dehydrated_cert_path }}/dehydrated.conf"
+    mode: "0644"
   tags:
     - ssl
 
 - name: Ensure that the dehydrated hooks file exists
-  template:
+  ansible.builtin.template:
     src: hooks.sh
     dest: "{{ dehydrated_cert_path }}/hooks.sh"
-    mode: 0750
+    mode: "0750"
     owner: root
   tags:
     - dehydrated
 
 - name: Ensure that the letsencrypt domain list file exists
-  file:
+  ansible.builtin.file:
     path: "{{ dehydrated_cert_path }}/domains.txt"
     state: touch
+    mode: "0644"
   tags:
     - dehydrated
 
 - name: Build the letsencrypt domain list
-  template:
+  ansible.builtin.template:
     src: domains.txt.j2
     dest: /etc/ssl/letsencrypt/domains.txt
+    mode: "0644"
   tags:
     - dehydrated
 
 - name: Download the dehydrated shell script
-  get_url:
+  ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/lukas2511/dehydrated/v0.6.1/dehydrated
     dest: /etc/ssl/letsencrypt/dehydrated
-    mode: 0700
-    sha256sum: fa4a788e244b61a69f091a19430821a616de2fc1ab1be237aa15973848178fcf
+    mode: "0700"
+    checksum: sha256:fa4a788e244b61a69f091a19430821a616de2fc1ab1be237aa15973848178fcf
   tags:
     - dehydrated
 
-- name: Accept the Terms of Service if nessesary
-  command: ./dehydrated --register --accept-terms
+- name: Accept the Terms of Service if necessary
+  ansible.builtin.command: ./dehydrated --register --accept-terms
   args:
     chdir: "{{ dehydrated_cert_path }}"
+    creates: "{{ dehydrated_cert_path }}/accounts"
   tags:
     - dehydrated
 
 - name: Execute dehydrated shell script
-  command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
+  ansible.builtin.command: ./dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf
   args:
     chdir: "{{ dehydrated_cert_path }}"
+  changed_when: false
   tags:
     - dehydrated
 
 - name: Add letsencrypt cronjob
-  cron:
+  ansible.builtin.cron:
     name: letsencrypt
-    hour: 7
-    minute: 0
+    hour: "7"
+    minute: "0"
     day: "*/3"
     job: "{{ dehydrated_cert_path }}/dehydrated -c --hook {{ dehydrated_cert_path }}/hooks.sh -f {{ dehydrated_cert_path }}/dehydrated.conf"
   tags:

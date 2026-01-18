@@ -1,6 +1,6 @@
 ---
 - name: Ensure all dehydrated dependencies are installed
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ item }}"
     state: present
   with_items:

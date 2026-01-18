@@ -1,7 +1,7 @@
 ---
 - name: Ensure all dehydrated dependencies are installed
-  pacman:
-    pkg: "{{item}}"
+  community.general.pacman:
+    pkg: "{{ item }}"
     state: present
   with_items:
     - openssl
@@ -14,7 +14,7 @@
     - dehydrated
 
 - name: Make sure cronie is running
-  service:
+  ansible.builtin.service:
     name: cronie
     state: started
     enabled: true
